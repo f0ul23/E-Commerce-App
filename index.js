@@ -18,7 +18,7 @@ app.listen(port, () => {
 });
 
 mongoose
-  .connect("mongodb+srv://sumera:DKZ2tohGMVpYZKFC@cluster0.ybyck.mongodb.net/", {
+  .connect("mongodb+srv://sumera:<yourpassword>cluster0.ybyck.mongodb.net/", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
