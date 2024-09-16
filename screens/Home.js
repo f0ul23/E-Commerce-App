@@ -1,4 +1,4 @@
-import { React } from "react";
+import { React, useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -19,8 +19,47 @@ import OIP from "../assets/OIP.png";
 import clothing from "../assets/clothing.png";
 import makeup from "../assets/makeup.png";
 import electronins from "../assets/electronins.png";
+import axios from "axios";
+import Products from "../components/Products";
+import DropDownPicker from "react-native-dropdown-picker";
+import { useNavigation } from "@react-navigation/native";
+
+
 
 const Homescreen = () => {
+
+  const navigation = useNavigation()
+
+  const [products, setProducts] = useState();
+
+  const [open, setOpen] = useState(false);
+  const [category, setCategory] = useState("jewelery");
+  const [item, setItem] = useState([
+    { label: "men's cloting", value: "men's cloting" },
+    { label: "jewelery", value: "jewelery" },
+    { label: "electronics", value: "electronics" },
+    { label: "women's cloting", value: "women's clothing" },
+  ])
+
+
+  const onGenderOpen = useCallback(()=>{
+    setCompanyOpen(false)
+  },[])
+  
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("https://fakestoreapi.com/products");
+        setProducts(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, []);
+  console.log("products", products);
+
   const offers = [
     {
       id: "0",
@@ -300,9 +339,22 @@ const Homescreen = () => {
           Trending Deals of the week
         </Text>
 
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <View style={{ flexDirection: "row", flex: 1, flexWrap: "wrap" }}>
-          {deals.map((item, index) => (
+          {deals?.map((item, index) => (
             <Pressable
+            onPress={() =>
+              navigation.navigate("Info", {
+                id: item.id,
+                title: item.title,
+                price: item?.price,
+                carouselImages: item.carouselImages,
+                color: item?.color,
+                size: item?.size,
+                oldPrice: item?.oldPrice,
+                item: item,
+              })
+            }
               style={{
                 marginVertical: 10,
                 flexDirection: "row",
@@ -316,6 +368,8 @@ const Homescreen = () => {
             </Pressable>
           ))}
         </View>
+        </ScrollView>
+
         <Text
           style={{
             height: 1,
@@ -328,8 +382,20 @@ const Homescreen = () => {
           Today's Deals
         </Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {offers.map((item) => (
+          {offers?.map((item) => (
             <Pressable
+            onPress={() =>
+              navigation.navigate("Info", {
+                id: item.id,
+                title: item.title,
+                price: item?.price,
+                carouselImages: item.carouselImages,
+                color: item?.color,
+                size: item?.size,
+                oldPrice: item?.oldPrice,
+                item: item,
+              })
+            }
               style={{
                 margin: 10,
                 justifyContent: "center",
@@ -366,6 +432,7 @@ const Homescreen = () => {
             </Pressable>
           ))}
         </ScrollView>
+
         <Text
           style={{
             height: 1,
@@ -374,6 +441,41 @@ const Homescreen = () => {
             marginTop: 12,
           }}
         />
+
+            <View
+            style={{
+              marginHorizontal: 10,
+              marginTop: 20,
+              width: "45%",
+              marginBottom: open ? 50 : 15,
+            }}
+          >
+            <DropDownPicker
+              style={{
+                borderColor: "#B7B7B7",
+                height: 30,
+                marginBottom: open ? 120 : 15,
+              }}
+              open={open}
+              value={category} //genderValue
+              items={item}
+              setOpen={setOpen}
+              setValue={setCategory}
+              setItems={setItem}
+              placeholder="choose category"
+              placeholderStyle={styles.placeholderStyles}
+              onOpen={onGenderOpen}
+              // onChangeValue={onChange}
+              zIndex={3000}
+              zIndexInverse={1000}
+            />
+          </View>
+        <View style={styles.products}>
+          {products?.filter((item)=>
+            item.category === category).map((item, index) => (
+            <Products item={item} keys={index} />
+          ))}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -401,6 +503,14 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     resizeMode: "contain",
+  },
+  products: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    flexWrap: "wrap",
+    gap: 10,
   },
 });
 
