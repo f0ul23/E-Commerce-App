@@ -1,0 +1,1 @@
+This is a full-stack e-commerce application developed using the MERN (MongoDB, Express.js, React Native, Node.js) stack. The platform enables users to browse and purchase products, manage their accounts, and process payments seamlessly, offering both customer and admin functionalities.
